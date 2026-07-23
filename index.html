@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Blitz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="scanline"></div>
+
+  <!-- START SCREEN / MAIN MENU -->
+  <section id="screen-start" class="screen active">
+    <div class="wrap">
+      <p class="eyebrow">8th grade arithmetic / against the clock</p>
+      <h1 class="title"><span class="title-part">MATH</span><span class="title-part accent">BLITZ</span></h1>
+      <p class="tagline" id="tagline">10 seconds a question. 3 lives. How long can you run?</p>
+
+      <div class="rules" id="rules-preview"></div>
+
+      <div class="menu-buttons">
+        <button id="btn-start" class="btn-primary">START RUN</button>
+        <button id="btn-settings" class="btn-secondary">SETTINGS</button>
+      </div>
+      <p class="best-preview">Best streak: <span id="start-best">0</span></p>
+    </div>
+  </section>
+
+  <!-- SETTINGS SCREEN -->
+  <section id="screen-settings" class="screen">
+    <div class="wrap wrap-wide">
+      <p class="eyebrow">customize your run</p>
+      <h1 class="title-sm">SETTINGS</h1>
+
+      <div class="settings-panel">
+
+        <div class="setting-group">
+          <div class="setting-header">
+            <span class="setting-label">Question speed</span>
+            <span class="setting-value" id="speed-value">10s</span>
+          </div>
+          <input type="range" id="speed-slider" class="slider" min="5" max="20" step="1" value="10" />
+          <div class="slider-scale"><span>5s</span><span>20s</span></div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-header">
+            <span class="setting-label">Lives</span>
+            <span class="setting-value" id="lives-value">3</span>
+          </div>
+          <div class="hearts-picker" id="hearts-picker"></div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-header">
+            <span class="setting-label">Topics</span>
+          </div>
+          <div class="chip-group" id="topics-group"></div>
+          <p class="setting-hint" id="topics-hint"></p>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-header">
+            <span class="setting-label">Number type</span>
+          </div>
+          <div class="chip-group chip-group-single" id="numtype-group"></div>
+        </div>
+
+      </div>
+
+      <div class="menu-buttons">
+        <button id="btn-settings-back" class="btn-primary">BACK TO MENU</button>
+        <button id="btn-settings-reset" class="btn-secondary">RESET DEFAULTS</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAME SCREEN -->
+  <section id="screen-game" class="screen">
+    <div class="hud">
+      <div class="hud-block">
+        <span class="hud-label">LIVES</span>
+        <div id="lives" class="lives"></div>
+      </div>
+      <div class="hud-block hud-center">
+        <span class="hud-label">STREAK</span>
+        <span id="streak" class="streak-num">0</span>
+      </div>
+      <div class="hud-block hud-right">
+        <span class="hud-label">BEST</span>
+        <span id="best" class="best-num">0</span>
+      </div>
+    </div>
+
+    <div class="timer-track">
+      <div id="timer-fill" class="timer-fill"></div>
+    </div>
+
+    <div class="question-area">
+      <p id="question-type" class="question-type">—</p>
+      <h2 id="question-text" class="question-text">—</h2>
+
+      <form id="answer-form" autocomplete="off">
+        <input
+          id="answer-input"
+          type="text"
+          inputmode="decimal"
+          placeholder="your answer"
+          autocomplete="off"
+        />
+        <button type="submit" class="btn-submit">GO</button>
+      </form>
+
+      <p id="feedback" class="feedback"></p>
+    </div>
+  </section>
+
+  <!-- GAME OVER SCREEN -->
+  <section id="screen-over" class="screen">
+    <div class="wrap">
+      <p class="eyebrow">run over</p>
+      <h1 class="title-sm">OUT OF<span class="accent"> LIVES</span></h1>
+
+      <div class="results">
+        <div class="result-block">
+          <span class="result-num" id="final-streak">0</span>
+          <span class="result-label">this run</span>
+        </div>
+        <div class="result-block">
+          <span class="result-num accent" id="final-best">0</span>
+          <span class="result-label">best streak</span>
+        </div>
+      </div>
+
+      <p id="new-best-msg" class="new-best-msg">new best streak!</p>
+
+      <div class="menu-buttons">
+        <button id="btn-retry" class="btn-primary">REPLAY</button>
+        <button id="btn-menu" class="btn-secondary">MAIN MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="game.js"></script>
+</body>
+</html>
