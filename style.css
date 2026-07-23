@@ -196,6 +196,115 @@ body {
 }
 .best-preview span { color: var(--accent); font-weight: 700; }
 
+.byline {
+  margin-top: 10px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  opacity: 0.7;
+}
+
+/* ---------- HAMBURGER + ABOUT SIDEBAR ---------- */
+
+.hamburger {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 110;
+}
+
+.hamburger:hover { border-color: var(--accent); }
+.hamburger:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 90;
+}
+
+.sidebar-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: min(320px, 85vw);
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 80px 28px 28px;
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sidebar-close:hover { border-color: var(--accent); color: var(--accent); }
+.sidebar-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.sidebar-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 24px;
+  margin: 0 0 18px;
+  text-align: left;
+}
+
+.sidebar-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  text-align: left;
+}
+
+@media (max-width: 420px) {
+  .hamburger { top: 16px; left: 16px; }
+}
+
 /* ---------- SETTINGS SCREEN ---------- */
 
 .settings-panel {
@@ -286,12 +395,13 @@ body {
 /* hearts picker */
 .hearts-picker {
   display: flex;
+  justify-content: space-between;
   gap: 10px;
 }
 
 .heart-btn {
-  width: 32px;
-  height: 32px;
+  flex: 1;
+  height: 56px;
   border: none;
   background: transparent;
   cursor: pointer;

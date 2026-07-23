@@ -15,10 +15,33 @@
 
   <!-- START SCREEN / MAIN MENU -->
   <section id="screen-start" class="screen active">
+
+    <button id="btn-hamburger" class="hamburger" aria-label="Open about menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <aside id="sidebar" class="sidebar">
+      <button id="btn-sidebar-close" class="sidebar-close" aria-label="Close about menu">✕</button>
+      <p class="eyebrow" style="text-align:left;">about</p>
+      <h2 class="sidebar-title">ABOUT ME</h2>
+      <p class="sidebar-text">
+        Hey, I'm Palash — an 8th grader who likes building things with code.
+        <br><br>The inspiration for Math Blitz came when I needed a way to refresh my mental math skills,
+        and I drew on my love for code and experience in web applications to create this project. 
+        <br><br>I hope you get some use out of my site, and that you have as much fun as I did!
+        <br><br>If you have any questions or bugs to report, you can shoot me an email at doshipalasha@gmail.com.
+        <br><br>Math on!
+      </p>
+    </aside>
+
     <div class="wrap">
-      <p class="eyebrow">8th grade arithmetic / against the clock</p>
+      <p class="eyebrow">fast paced arithmetic / against the clock</p>
       <h1 class="title"><span class="title-part">MATH</span><span class="title-part accent">BLITZ</span></h1>
-      <p class="tagline" id="tagline">10 seconds a question. 3 lives. How long can you run?</p>
+      <p class="tagline" id="tagline">10 seconds a question. 3 lives. How long can you keep up?</p>
 
       <div class="rules" id="rules-preview"></div>
 
@@ -27,6 +50,7 @@
         <button id="btn-settings" class="btn-secondary">SETTINGS</button>
       </div>
       <p class="best-preview">Best streak: <span id="start-best">0</span></p>
+      <p class="byline">Math Blitz by Palash Doshi</p>
     </div>
   </section>
 

@@ -86,6 +86,11 @@ const el = {
   tagline: document.getElementById('tagline'),
   rulesPreview: document.getElementById('rules-preview'),
 
+  hamburger: document.getElementById('btn-hamburger'),
+  sidebar: document.getElementById('sidebar'),
+  sidebarOverlay: document.getElementById('sidebar-overlay'),
+  sidebarClose: document.getElementById('btn-sidebar-close'),
+
   speedSlider: document.getElementById('speed-slider'),
   speedValue: document.getElementById('speed-value'),
   livesValue: document.getElementById('lives-value'),
@@ -117,6 +122,20 @@ document.getElementById('btn-settings-reset').addEventListener('click', resetSet
 el.form.addEventListener('submit', handleSubmit);
 el.speedSlider.addEventListener('input', handleSpeedChange);
 
+el.hamburger.addEventListener('click', openSidebar);
+el.sidebarClose.addEventListener('click', closeSidebar);
+el.sidebarOverlay.addEventListener('click', closeSidebar);
+
+function openSidebar() {
+  el.sidebar.classList.add('open');
+  el.sidebarOverlay.classList.add('open');
+}
+
+function closeSidebar() {
+  el.sidebar.classList.remove('open');
+  el.sidebarOverlay.classList.remove('open');
+}
+
 // ---- font-flash fix ----
 // Syne loads async; without this the title briefly renders in the
 // fallback font then jumps to Syne, which reads as a glitch. Hide it
@@ -145,7 +164,7 @@ function goToMenu() {
 
 function renderMenuPreview() {
   el.startBest.textContent = best;
-  el.tagline.textContent = `${settings.time} seconds a question. ${settings.lives} ${settings.lives === 1 ? 'life' : 'lives'}. How long can you run?`;
+  el.tagline.textContent = `${settings.time} seconds a question. ${settings.lives} ${settings.lives === 1 ? 'life' : 'lives'}. How long can you keep up?`;
 
   const activeTopics = Object.keys(settings.topics).filter(t => settings.topics[t]);
   el.rulesPreview.innerHTML = `
@@ -170,6 +189,7 @@ function renderMenuPreview() {
 
 // ---- settings screen ----
 function openSettings() {
+  closeSidebar();
   el.speedSlider.value = settings.time;
   el.speedValue.textContent = settings.time + 's';
   el.livesValue.textContent = settings.lives;
@@ -464,6 +484,7 @@ function updateHud() {
 
 // ---- game flow ----
 function startGame() {
+  closeSidebar();
   lives = settings.lives;
   streak = 0;
   updateHud();
