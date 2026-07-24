@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -21,6 +22,8 @@
       <span></span>
       <span></span>
     </button>
+
+    <button id="btn-account" class="btn-secondary account-btn">LOG IN</button>
 
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
@@ -38,6 +41,20 @@
       </p>
     </aside>
 
+    <div id="auth-overlay" class="sidebar-overlay"></div>
+    <div id="auth-modal" class="auth-modal">
+      <button id="btn-auth-close" class="sidebar-close" aria-label="Close">✕</button>
+      <h2 class="sidebar-title" id="auth-title">LOG IN</h2>
+      <input id="auth-email" class="auth-input" type="email" placeholder="email" autocomplete="email" />
+      <input id="auth-password" class="auth-input" type="password" placeholder="password" autocomplete="current-password" />
+      <p id="auth-error" class="auth-error"></p>
+      <button id="btn-auth-submit" class="btn-primary auth-submit">LOG IN</button>
+      <p class="auth-toggle">
+        <span id="auth-toggle-text">No account?</span>
+        <button id="btn-auth-toggle" class="auth-link">Sign up</button>
+      </p>
+    </div>
+
     <div class="wrap">
       <p class="eyebrow">fast paced arithmetic / against the clock</p>
       <h1 class="title"><span class="title-part">MATH</span><span class="title-part accent">BLITZ</span></h1>
@@ -51,6 +68,12 @@
       </div>
       <p class="best-preview">Best streak: <span id="start-best">0</span></p>
       <p class="byline">Math Blitz by Palash Doshi</p>
+
+      <button id="btn-like" class="like-btn" aria-pressed="false">
+        <svg class="like-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span id="like-label">Like this app</span>
+        <span id="like-count" class="like-count"></span>
+      </button>
     </div>
   </section>
 

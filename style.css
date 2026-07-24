@@ -204,6 +204,132 @@ body {
   opacity: 0.7;
 }
 
+.like-btn {
+  margin-top: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 20px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.like-btn:hover { border-color: var(--accent); color: var(--text); }
+.like-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.like-btn .like-icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--text-dim);
+  transition: fill 0.15s ease, transform 0.15s ease;
+}
+
+.like-btn.liked {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.like-btn.liked .like-icon {
+  fill: var(--accent);
+  transform: scale(1.15);
+}
+
+.like-btn:active .like-icon {
+  transform: scale(0.85);
+}
+
+.like-count {
+  color: var(--accent);
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+/* ---------- ACCOUNT BUTTON + AUTH MODAL ---------- */
+
+.account-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 110;
+  padding: 10px 18px;
+  font-size: 12px;
+}
+
+.auth-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: min(340px, 88vw);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 32px 24px 24px;
+  z-index: 120;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.auth-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.auth-input {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.auth-input:focus { outline: none; border-color: var(--accent); }
+
+.auth-error {
+  font-size: 12px;
+  color: var(--accent-hot);
+  min-height: 1.2em;
+  margin: 4px 0 12px;
+}
+
+.auth-submit { width: 100%; padding: 14px; }
+
+.auth-toggle {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 16px;
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+
+.auth-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 420px) {
+  .account-btn { top: 16px; right: 16px; padding: 8px 14px; }
+}
+
 /* ---------- HAMBURGER + ABOUT SIDEBAR ---------- */
 
 .hamburger {

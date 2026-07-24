@@ -1,6 +1,20 @@
 // ===== BLITZ STREAK — game logic =====
 
-const STORAGE_BEST_KEY = 'blitzstreak_best';
+// ---- Supabase setup ----
+// Guarded: if the CDN script fails to load for any reason, `sb` stays null
+// null and login/likes quietly disable instead of crashing the whole game.
+const SUPABASE_URL = 'https://kqvisloxkisvvwkqmici.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxdmlzbG94a2lzdnZ3a3FtaWNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzIxODYsImV4cCI6MjEwMDQwODE4Nn0.G6Zut4AiwR61worQNWEJnyavgjkm42A2L6ajtRWeqFI';
+const sb = (typeof window.supabase !== 'undefined')
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+if (!sb) {
+  console.warn('Supabase failed to load — login and likes are disabled, but the game still works.');
+}
+
+let currentUser = null;
+let authMode = 'login'; // 'login' | 'signup'
 const STORAGE_SETTINGS_KEY = 'blitzstreak_settings';
 const MISS_DELAY = 1500;    // ms pause after a wrong/timed-out answer
 const CORRECT_DELAY = 500;  // ms pause after a correct answer
@@ -67,7 +81,9 @@ let settings = loadSettings();
 // ---- runtime state ----
 let lives = settings.lives;
 let streak = 0;
-let best = Number(localStorage.getItem(STORAGE_BEST_KEY)) || 0;
+// Guests: best streak lives only in memory, wiped on refresh.
+// Logged-in users: loaded from / saved to Supabase in checkSession()/saveBestStreak().
+let best = 0;
 let timeLeft = settings.time;
 let timerId = null;
 let currentAnswer = null;
@@ -90,6 +106,22 @@ const el = {
   sidebar: document.getElementById('sidebar'),
   sidebarOverlay: document.getElementById('sidebar-overlay'),
   sidebarClose: document.getElementById('btn-sidebar-close'),
+
+  accountBtn: document.getElementById('btn-account'),
+  authOverlay: document.getElementById('auth-overlay'),
+  authModal: document.getElementById('auth-modal'),
+  authClose: document.getElementById('btn-auth-close'),
+  authTitle: document.getElementById('auth-title'),
+  authEmail: document.getElementById('auth-email'),
+  authPassword: document.getElementById('auth-password'),
+  authError: document.getElementById('auth-error'),
+  authSubmit: document.getElementById('btn-auth-submit'),
+  authToggleText: document.getElementById('auth-toggle-text'),
+  authToggleBtn: document.getElementById('btn-auth-toggle'),
+
+  likeBtn: document.getElementById('btn-like'),
+  likeLabel: document.getElementById('like-label'),
+  likeCount: document.getElementById('like-count'),
 
   speedSlider: document.getElementById('speed-slider'),
   speedValue: document.getElementById('speed-value'),
@@ -135,6 +167,150 @@ function closeSidebar() {
   el.sidebar.classList.remove('open');
   el.sidebarOverlay.classList.remove('open');
 }
+
+// ---- likes (global count via Supabase) ----
+// 1 call on page load to read the count, 1 call per click. No polling.
+async function loadLikeCount() {
+  if (!sb) return;
+  const { data, error } = await sb.from('app_stats').select('likes_count').eq('id', 1).single();
+  if (!error && data) el.likeCount.textContent = data.likes_count;
+}
+
+function setLikeState(liked) {
+  el.likeBtn.classList.toggle('liked', liked);
+  el.likeBtn.setAttribute('aria-pressed', String(liked));
+  el.likeLabel.textContent = liked ? 'Liked' : 'Like this app';
+}
+
+async function toggleLikeRemote() {
+  if (!sb) return;
+  const liked = localStorage.getItem('blitzstreak_liked') === 'true';
+  const fn = liked ? 'decrement_likes' : 'increment_likes';
+  const { data, error } = await sb.rpc(fn);
+  if (!error && data !== null) {
+    el.likeCount.textContent = data;
+    localStorage.setItem('blitzstreak_liked', String(!liked));
+    setLikeState(!liked);
+  }
+}
+
+el.likeBtn.addEventListener('click', toggleLikeRemote);
+setLikeState(localStorage.getItem('blitzstreak_liked') === 'true');
+
+// ---- auth (email + password via Supabase) ----
+async function checkSession() {
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  currentUser = session?.user ?? null;
+  updateAccountUI();
+  if (currentUser) await loadBestStreak();
+}
+
+function updateAccountUI() {
+  el.accountBtn.textContent = currentUser ? 'LOG OUT' : 'LOG IN';
+}
+
+async function loadBestStreak() {
+  if (!sb) return;
+  const { data, error } = await sb
+    .from('profiles')
+    .select('best_streak')
+    .eq('id', currentUser.id)
+    .single();
+
+  if (!error && data) {
+    // carry over any in-session guest progress if it beats the saved value
+    if (best > data.best_streak) {
+      await saveBestStreak();
+    } else {
+      best = data.best_streak;
+    }
+  } else {
+    // first login for this user — create their profile row
+    await saveBestStreak();
+  }
+  el.startBest.textContent = best;
+}
+
+async function saveBestStreak() {
+  if (!sb || !currentUser) return; // guests: never written anywhere, wiped on refresh
+  await sb.from('profiles').upsert({ id: currentUser.id, best_streak: best });
+}
+
+function openAuthModal() {
+  el.authOverlay.classList.add('open');
+  el.authModal.classList.add('open');
+  el.authError.textContent = '';
+  el.authEmail.value = '';
+  el.authPassword.value = '';
+}
+
+function closeAuthModal() {
+  el.authOverlay.classList.remove('open');
+  el.authModal.classList.remove('open');
+}
+
+function setAuthMode(mode) {
+  authMode = mode;
+  el.authTitle.textContent = mode === 'login' ? 'LOG IN' : 'SIGN UP';
+  el.authSubmit.textContent = mode === 'login' ? 'LOG IN' : 'SIGN UP';
+  el.authToggleText.textContent = mode === 'login' ? 'No account?' : 'Already have one?';
+  el.authToggleBtn.textContent = mode === 'login' ? 'Sign up' : 'Log in';
+  el.authError.textContent = '';
+}
+
+el.accountBtn.addEventListener('click', async () => {
+  if (!sb) return;
+  if (currentUser) {
+    await sb.auth.signOut();
+    currentUser = null;
+    updateAccountUI();
+  } else {
+    setAuthMode('login');
+    openAuthModal();
+  }
+});
+
+el.authClose.addEventListener('click', closeAuthModal);
+el.authOverlay.addEventListener('click', closeAuthModal);
+el.authToggleBtn.addEventListener('click', () => setAuthMode(authMode === 'login' ? 'signup' : 'login'));
+
+el.authSubmit.addEventListener('click', async () => {
+  if (!sb) {
+    el.authError.textContent = 'Login is temporarily unavailable.';
+    return;
+  }
+  const email = el.authEmail.value.trim();
+  const password = el.authPassword.value;
+  el.authError.textContent = '';
+
+  if (!email || !password) {
+    el.authError.textContent = 'Enter an email and password.';
+    return;
+  }
+
+  el.authSubmit.disabled = true;
+  const { data, error } = authMode === 'login'
+    ? await sb.auth.signInWithPassword({ email, password })
+    : await sb.auth.signUp({ email, password });
+  el.authSubmit.disabled = false;
+
+  if (error) {
+    el.authError.textContent = error.message;
+    return;
+  }
+
+  if (!data.session) {
+    // signup succeeded but email confirmation is required before login
+    el.authError.textContent = 'Check your email to confirm your account, then log in.';
+    return;
+  }
+
+  currentUser = data.user;
+  updateAccountUI();
+  closeAuthModal();
+  await loadBestStreak();
+});
 
 // ---- font-flash fix ----
 // Syne loads async; without this the title briefly renders in the
@@ -440,7 +616,7 @@ function handleCorrect() {
   streak++;
   if (streak > best) {
     best = streak;
-    localStorage.setItem(STORAGE_BEST_KEY, String(best));
+    saveBestStreak(); // no-op for guests — their progress lives only in this tab
   }
   updateHud();
   el.feedback.textContent = 'correct';
@@ -503,3 +679,5 @@ function gameOver() {
 // ---- init ----
 renderMenuPreview();
 showScreen('start');
+checkSession();
+loadLikeCount();
